@@ -7,7 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -59,7 +58,6 @@
             cursor: pointer;
             flex-shrink: 0;
             padding: 0 10px;
-            position: relative;
         }
         
         .card-inner {
@@ -104,39 +102,6 @@
             transform: rotateY(180deg);
             font-size: 28px;
             font-weight: 600;
-        }
-        
-        .tts-button {
-            position: absolute;
-            top: 12px;
-            right: 25px;
-            width: 32px;
-            height: 32px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            z-index: 10;
-            transition: all var(--transition-speed) ease;
-            color: var(--text-light);
-            font-size: 14px;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        
-        .tts-button:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
-        }
-        
-        .tts-button.muted {
-            color: rgba(255, 255, 255, 0.5);
-        }
-        
-        .tts-button.muted i::before {
-            content: '\f6a9';
         }
         
         .controls {
@@ -190,6 +155,32 @@
             transform: scale(1.3);
         }
         
+        .tts-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 18px;
+            gap: 10px;
+        }
+        
+        .tts-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+        
+        .tts-toggle input {
+            margin: 0;
+            accent-color: var(--primary-color);
+            width: 16px;
+            height: 16px;
+        }
+        
+        .tts-toggle label {
+            font-size: 14px;
+            color: #6B7280;
+        }
+        
         .info-text {
             text-align: center;
             margin-top: 15px;
@@ -205,6 +196,12 @@
         </div>
         <div class="card-indicator" id="cardIndicator">
             <!-- 인디케이터는 JavaScript로 동적 생성됩니다 -->
+        </div>
+        <div class="tts-controls">
+            <div class="tts-toggle">
+                <input type="checkbox" id="ttsToggle" checked>
+                <label for="ttsToggle">TTS 사용</label>
+            </div>
         </div>
         <div class="controls">
             <button id="prevBtn">이전</button>
@@ -253,9 +250,7 @@
         const cardIndicator = document.getElementById('cardIndicator');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
-        
-        // TTS 상태 변수
-        let ttsEnabled = true;
+        const ttsToggle = document.getElementById('ttsToggle');
         
         // TTS 기능 확인
         const synth = window.speechSynthesis;
@@ -276,7 +271,7 @@
         
         // 텍스트를 음성으로 변환하는 함수
         function speakText(text) {
-            if (!ttsEnabled) return;
+            if (!ttsToggle.checked) return;
             
             // 이미 말하고 있다면 중지
             synth.cancel();
@@ -318,40 +313,16 @@
                             ${word.korean}
                         </div>
                     </div>
-                    <div class="tts-button">
-                        <i class="fas fa-volume-up"></i>
-                    </div>
                 `;
                 
                 // 카드 클릭 이벤트
-                card.querySelector('.card-inner').addEventListener('click', function() {
-                    card.classList.add('flipped');
+                card.addEventListener('click', function() {
+                    this.classList.add('flipped');
                     
                     // 1.5초 후 카드 원래대로
                     setTimeout(() => {
-                        card.classList.remove('flipped');
+                        this.classList.remove('flipped');
                     }, 1500);
-                });
-                
-                // TTS 버튼 클릭 이벤트
-                const ttsButton = card.querySelector('.tts-button');
-                ttsButton.addEventListener('click', (e) => {
-                    e.stopPropagation(); // 카드 클릭 이벤트 전파 방지
-                    
-                    ttsEnabled = !ttsEnabled;
-                    
-                    // 모든 TTS 버튼 상태 업데이트
-                    document.querySelectorAll('.tts-button').forEach(btn => {
-                        if (!ttsEnabled) {
-                            btn.classList.add('muted');
-                        } else {
-                            btn.classList.remove('muted');
-                            // TTS가 활성화되면 현재 단어 읽기
-                            if (btn === ttsButton) {
-                                speakCurrentWord();
-                            }
-                        }
-                    });
                 });
                 
                 cardSlider.appendChild(card);
