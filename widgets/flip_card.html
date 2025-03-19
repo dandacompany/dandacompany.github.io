@@ -275,15 +275,15 @@
                 utterance.rate = 0.9;
                 
                 // 오류 처리
-                utterance.onerror = (event) => {
-                    console.warn('TTS 오류 발생:', event.error);
-                    if (event.error === 'not-allowed') {
-                        ttsEnabled = false;
-                        document.querySelectorAll('.tts-button').forEach(btn => {
-                            btn.classList.add('muted');
-                        });
-                    }
-                };
+                //    utterance.onerror = (event) => {
+                //    console.warn('TTS 오류 발생:', event.error);
+                //    if (event.error === 'not-allowed') {
+                //        ttsEnabled = false;
+                //        document.querySelectorAll('.tts-button').forEach(btn => {
+                //            btn.classList.add('muted');
+                //        });
+                //    }
+                // };
                 
                 // 웹 페이지 최초 로드 시 사용자 상호작용 없이 자동 재생 방지 조치
                 // 첫 번째 발화 시 오류가 발생하면 자동으로 음소거 모드로 전환
