@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영단어 카드</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #5D5FEF;
+            --seccondary-color: #10B981;
+            --background-color: #FFFFFF;
+            --card-background: #FFFFFF;
+            --text-dark: #1F2937;
+            --text-light: #F3F4F6;
+            --border-radius: 16px;
+            --transition-speed: 0.4s;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--background-color);
+            color: var(--text-dark);
+        }
+        
+        .card-container {
+            perspective: 1500px;
+            width: 320px;
+            height: 450px;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 10px 25px rgba(93, 95, 239, 0.15);
+            border-radius: var(--border-radius);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 0;
+        }
+        
+        .card-front {
+            display: flex;
+            flex-direction: column;
+            background: none;
+        }
+        
+        .card-front-top {
+            flex: 3;
+            width: 100%;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+            position: relative;
+        }
+        
+        .card-front-bottom {
+            flex: 3;
+            width: 100%;
+            background: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            border-bottom-left-radius: var(--border-radius);
+            border-bottom-right-radius: var(--border-radius);
+            position: relative;
+        }
+        
+        .card-back {
+            background: linear-gradient(135deg, var(--seccondary-color), #34D399);
+            color: var(--text-light);
+            transform: rotateY(180deg);
+        }
+        
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .card-image-container {
+            width: 90%;
+            height: 90%;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: none;
+        }
+        
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .card:hover .card-image {
+            transform: scale(1.05);
+        }
+        
+        .card-word {
+            font-size: var(--dynamic-word-font-size, 50px);
+            font-weight: 700;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            color: var(--text-light);
+            letter-spacing: 0.5px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            width: 100%;
+            max-height: 100%;
+            line-height: 1.1;
+            word-break: break-word;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .card-meaning {
+            font-size: var(--dynamic-meaning-font-size, 36px);
+            font-weight: 600;
+            text-align: center;
+            margin: 0;
+            padding: 0 10px;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            word-break: break-word;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            width: 100%;
+            max-height: 100%;
+        }
+        
+        /* 효과 추가 */
+        .card-container::before {
+            content: '';
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            width: 90%;
+            height: 90%;
+            border-radius: var(--border-radius);
+            background: rgba(255, 255, 255, 0.1);
+            z-index: -1;
+            filter: blur(20px);
+        }
+        
+        /* 음성 재생 버튼 스타일 */
+        .audio-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .audio-button:hover {
+            transform: scale(1.1);
+            background-color: var(--secondary-color);
+        }
+        
+        .audio-button:active {
+            transform: scale(0.95);
+        }
+        
+        .audio-button svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="card-container" id="cardContainer">
+        <div class="card" id="card">
+            <div class="card-front">
+                <div class="card-front-top">
+                    <div class="card-image-container">
+                        <img id="wordImage" class="card-image" src="" alt="단어 이미지">
+                    </div>
+                    <div class="audio-button" id="audioButton">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-front-bottom">
+                    <h2 id="wordText" class="card-word"></h2>
+                </div>
+            </div>
+            <div class="card-back">
+                <h2 id="meaningText" class="card-meaning"></h2>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // URL에서 쿼리 파라미터 가져오기
+            const urlParams = new URLSearchParams(window.location.search);
+            const word = urlParams.get('word') || 'apple';
+            const meaning = urlParams.get('meaning') || '사과';
+            let imageUrl = urlParams.get('image') || 'https://media.istockphoto.com/id/184276818/ko/%EC%82%AC%EC%A7%84/%EB%A0%88%EB%93%9C-%EC%82%AC%EA%B3%BC%EB%82%98%EB%AC%B4.jpg?s=612x612&w=0&k=20&c=qe0XwDHYbQFgVaqM2unXZWVqI7kV2SSfXrCYaHsdmWM%3D';
+            let audioUrl = urlParams.get('audio') || 'https://d3v6z7pi3x0q53.cloudfront.net/tts/apple.mp3';
+            const primaryColorValue = urlParams.get('primaryColor') || '5D5FEF';
+            const primaryColor = '#' + primaryColorValue;
+            
+            // 카드 크기 설정 (기본값: 320px)
+            const defaultWidth = 320;
+            const defaultHeight = 450;
+            const aspectRatio = defaultHeight / defaultWidth;
+            const cardWidth = parseInt(urlParams.get('width')) || defaultWidth;
+            const cardHeight = Math.round(cardWidth * aspectRatio);
+            
+            // 카드 크기 적용
+            const cardContainer = document.getElementById('cardContainer');
+            cardContainer.style.width = cardWidth + 'px';
+            cardContainer.style.height = cardHeight + 'px';
+            
+            // 폰트 크기 비율 계산
+            const fontSizeRatio = cardWidth / defaultWidth;
+            document.documentElement.style.setProperty('--dynamic-word-font-size', `${Math.round(50 * fontSizeRatio)}px`);
+            document.documentElement.style.setProperty('--dynamic-meaning-font-size', `${Math.round(36 * 2 * fontSizeRatio)}px`);
+            
+            // '@' 기호로 시작하는 경우 제거
+            if (imageUrl.startsWith('@')) {
+                imageUrl = imageUrl.substring(1);
+            }
+            
+            if (audioUrl.startsWith('@')) {
+                audioUrl = audioUrl.substring(1);
+            }
+
+            // primary 컬러 적용
+            document.documentElement.style.setProperty('--primary-color', primaryColor);
+
+            // 요소에 값 설정
+            const wordElement = document.getElementById('wordText');
+            const meaningElement = document.getElementById('meaningText');
+            
+            wordElement.textContent = word;
+            meaningElement.textContent = meaning;
+            document.getElementById('wordImage').src = imageUrl;
+            
+            // 오디오 요소 생성
+            const audio = new Audio();
+            audio.src = audioUrl;
+            
+            // 오디오 버튼 클릭 이벤트
+            const audioButton = document.getElementById('audioButton');
+            audioButton.addEventListener('click', function(e) {
+                e.stopPropagation(); // 카드 뒤집힘 방지
+                audio.currentTime = 0; // 처음부터 재생
+                audio.play();
+            });
+            
+            // 카드 클릭 이벤트 처리
+            const card = document.getElementById('card');
+            
+            cardContainer.addEventListener('click', function() {
+                card.classList.add('flipped');
+                
+                // 1초 후 다시 뒤집기
+                setTimeout(function() {
+                    card.classList.remove('flipped');
+                }, 1000);
+            });
+            
+            // 텍스트 크기 자동 조절 함수
+            function adjustFontSize(element, container) {
+                // 기본 최대 폰트 크기에 비율 적용
+                const maxFontSize = parseInt(window.getComputedStyle(element).fontSize);
+                const minFontSize = Math.max(20 * fontSizeRatio, 12); // 최소 폰트 크기도 비율에 맞게 조정하되 최소값 보장
+                let fontSize = maxFontSize;
+                
+                element.style.fontSize = `${fontSize}px`;
+                
+                // 텍스트가 3줄 이상이고 오버플로우가 발생하면 폰트 크기 줄이기
+                while (
+                    (element.scrollHeight > container.clientHeight || 
+                    element.offsetHeight > container.clientHeight) && 
+                    fontSize > minFontSize
+                ) {
+                    fontSize -= 2 * fontSizeRatio; // 폰트 감소 비율도 조정
+                    element.style.fontSize = `${fontSize}px`;
+                }
+            }
+            
+            // 단어 길이에 따라 폰트 크기 조절
+            const frontBottomContainer = document.querySelector('.card-front-bottom');
+            adjustFontSize(wordElement, frontBottomContainer);
+            
+            // 뜻도 같은 방식으로 조절
+            adjustFontSize(meaningElement, document.querySelector('.card-back'));
+        });
+    </script>
+</body>
+</html>
