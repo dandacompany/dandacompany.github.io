@@ -1,3 +1,26 @@
+<!--
+영단어 카드 위젯 사용법:
+
+1. URL 파라미터를 통해 카드 내용을 설정할 수 있습니다:
+   - word: 표시할 영단어 (기본값: apple)
+   - meaning: 단어의 의미 (기본값: 사과)
+   - image: 단어 이미지 URL (기본값: 사과 이미지)
+   - audio: 발음 오디오 파일 URL (기본값: apple 발음)
+   - primaryColor: 카드 주요 색상 (기본값: 5D5FEF, # 제외)
+   - wordTextColor: 단어 텍스트 색상 (기본값: F3F4F6, # 제외)
+
+2. 사용 예시:
+   https://example.com/widgets/audio_word_card.html?word=book&meaning=책&image=https://example.com/book.jpg&audio=https://example.com/book.mp3&primaryColor=10B981&wordTextColor=FFFFFF
+
+3. 카드 사용 방법:
+   - 카드를 클릭하면 앞면/뒷면이 전환됩니다
+   - 오른쪽 상단의 스피커 버튼을 클릭하면 단어 발음이 재생됩니다
+
+4. 반응형 디자인:
+   - 모바일 및 데스크톱 환경에 최적화되어 있습니다
+   - 다양한 화면 크기에 자동으로 적응합니다
+-->
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -16,13 +39,14 @@
         
         :root {
             --primary-color: #5D5FEF;
-            --seccondary-color: #10B981;
+            --secondary-color: #10B981;
             --background-color: #FFFFFF;
             --card-background: #FFFFFF;
             --text-dark: #1F2937;
             --text-light: #F3F4F6;
             --border-radius: 16px;
             --transition-speed: 0.4s;
+            --word-text-color: #F3F4F6;
         }
         
         body {
@@ -101,7 +125,7 @@
         }
         
         .card-back {
-            background: linear-gradient(135deg, var(--seccondary-color), #34D399);
+            background: linear-gradient(135deg, var(--secondary-color), #34D399);
             color: var(--text-light);
             transform: rotateY(180deg);
         }
@@ -136,7 +160,7 @@
             text-align: center;
             margin: 0;
             padding: 0;
-            color: var(--text-light);
+            color: var(--word-text-color);
             letter-spacing: 0.5px;
             display: -webkit-box;
             -webkit-line-clamp: 3;
@@ -251,6 +275,10 @@
             let audioUrl = urlParams.get('audio') || 'https://d3v6z7pi3x0q53.cloudfront.net/tts/apple.mp3';
             const primaryColorValue = urlParams.get('primaryColor') || '5D5FEF';
             const primaryColor = '#' + primaryColorValue;
+            const wordTextColorValue = urlParams.get('wordTextColor') || 'F3F4F6';
+            const wordTextColor = '#' + wordTextColorValue;
+            const secondaryColorValue = urlParams.get('secondaryColor') || '10B981';
+            const secondaryColor = '#' + secondaryColorValue;
             
             // 카드 크기 설정 (기본값: 320px)
             const defaultWidth = 320;
@@ -280,6 +308,8 @@
 
             // primary 컬러 적용
             document.documentElement.style.setProperty('--primary-color', primaryColor);
+            document.documentElement.style.setProperty('--word-text-color', wordTextColor);
+            document.documentElement.style.setProperty('--secondary-color', secondaryColor);
 
             // 요소에 값 설정
             const wordElement = document.getElementById('wordText');
