@@ -295,14 +295,20 @@
                 return '#' + colorParam;
             }
             
-            const primaryColorValue = urlParams.get('primaryColor') || '5D5FEF';
-            const primaryColor = processColor(primaryColorValue, '5D5FEF');
+            // 기본 색상값 설정
+            const defaultPrimaryColor = '5D5FEF';
+            const defaultSecondaryColor = '10B981';
+            const defaultWordTextColor = 'F3F4F6';
             
-            const wordTextColorValue = urlParams.get('wordTextColor') || 'F3F4F6';
-            const wordTextColor = processColor(wordTextColorValue, 'F3F4F6');
+            // 쿼리 스트링에서 색상값 가져오기
+            const primaryColorValue = urlParams.get('primaryColor');
+            const primaryColor = primaryColorValue ? processColor(primaryColorValue, defaultPrimaryColor) : '#' + defaultPrimaryColor;
             
-            const secondaryColorValue = urlParams.get('secondaryColor') || '10B981';
-            const secondaryColor = processColor(secondaryColorValue, '10B981');
+            const wordTextColorValue = urlParams.get('wordTextColor');
+            const wordTextColor = wordTextColorValue ? processColor(wordTextColorValue, defaultWordTextColor) : '#' + defaultWordTextColor;
+            
+            const secondaryColorValue = urlParams.get('secondaryColor');
+            const secondaryColor = secondaryColorValue ? processColor(secondaryColorValue, defaultSecondaryColor) : '#' + defaultSecondaryColor;
             
             // 카드 크기 설정 (기본값: 320px)
             const defaultWidth = 320;
