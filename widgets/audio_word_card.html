@@ -1,24 +1,24 @@
 <!--
-영단어 카드 위젯 사용법:
+English Word Card Widget Usage Guide:
 
-1. URL 파라미터를 통해 카드 내용을 설정할 수 있습니다:
-   - word: 표시할 영단어 (기본값: apple)
-   - meaning: 단어의 의미 (기본값: 사과)
-   - image: 단어 이미지 URL (기본값: 사과 이미지)
-   - audio: 발음 오디오 파일 URL (기본값: apple 발음)
-   - primaryColor: 카드 주요 색상 (기본값: 5D5FEF, # 제외)
-   - wordTextColor: 단어 텍스트 색상 (기본값: F3F4F6, # 제외)
+1. You can configure the card content through URL parameters:
+   - word: The English word to display (default: apple)
+   - meaning: The meaning of the word (default: 사과)
+   - image: Word image URL (default: apple image)
+   - audio: Pronunciation audio file URL (default: apple pronunciation)
+   - primaryColor: Card primary color (default: 5D5FEF, without #)
+   - wordTextColor: Word text color (default: F3F4F6, without #)
 
-2. 사용 예시:
+2. Usage example:
    https://example.com/widgets/audio_word_card.html?word=book&meaning=책&image=https://example.com/book.jpg&audio=https://example.com/book.mp3&primaryColor=10B981&wordTextColor=FFFFFF
 
-3. 카드 사용 방법:
-   - 카드를 클릭하면 앞면/뒷면이 전환됩니다
-   - 오른쪽 상단의 스피커 버튼을 클릭하면 단어 발음이 재생됩니다
+3. How to use the card:
+   - Click the card to flip between front and back
+   - Click the speaker button in the top right to play the word pronunciation
 
-4. 반응형 디자인:
-   - 모바일 및 데스크톱 환경에 최적화되어 있습니다
-   - 다양한 화면 크기에 자동으로 적응합니다
+4. Responsive design:
+   - Optimized for both mobile and desktop environments
+   - Automatically adapts to various screen sizes
 -->
 
 <!DOCTYPE html>
@@ -26,7 +26,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>영단어 카드</title>
+    <title>English Word Flip Card</title>
+    <link rel="icon" href="favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -272,7 +273,7 @@
             const word = urlParams.get('word') || 'apple';
             const meaning = urlParams.get('meaning') || '사과';
             let imageUrl = urlParams.get('image') || 'https://media.istockphoto.com/id/184276818/ko/%EC%82%AC%EC%A7%84/%EB%A0%88%EB%93%9C-%EC%82%AC%EA%B3%BC%EB%82%98%EB%AC%B4.jpg?s=612x612&w=0&k=20&c=qe0XwDHYbQFgVaqM2unXZWVqI7kV2SSfXrCYaHsdmWM%3D';
-            let audioUrl = urlParams.get('audio') || 'https://d3v6z7pi3x0q53.cloudfront.net/tts/apple.mp3';
+            let audioUrl = urlParams.get('audio') || './apple.mp3';
             
             // 색상 처리 함수 - 색상 이름 또는 Hex 코드 처리
             function processColor(colorParam, defaultColor) {
@@ -302,7 +303,9 @@
             
             // 쿼리 스트링에서 색상값 가져오기
             const primaryColorValue = urlParams.get('primaryColor');
+            console.log(primaryColorValue);
             const primaryColor = primaryColorValue ? processColor(primaryColorValue, defaultPrimaryColor) : '#' + defaultPrimaryColor;
+            console.log(primaryColor);
             
             const wordTextColorValue = urlParams.get('wordTextColor');
             const wordTextColor = wordTextColorValue ? processColor(wordTextColorValue, defaultWordTextColor) : '#' + defaultWordTextColor;
@@ -340,6 +343,9 @@
             document.documentElement.style.setProperty('--primary-color', primaryColor);
             document.documentElement.style.setProperty('--word-text-color', wordTextColor);
             document.documentElement.style.setProperty('--secondary-color', secondaryColor);
+            
+            // 오디오 버튼 아이콘 색상 설정
+            document.querySelector('.audio-button svg').style.fill = wordTextColor;
 
             // 요소에 값 설정
             const wordElement = document.getElementById('wordText');
