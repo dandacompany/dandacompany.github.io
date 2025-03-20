@@ -273,12 +273,36 @@
             const meaning = urlParams.get('meaning') || '사과';
             let imageUrl = urlParams.get('image') || 'https://media.istockphoto.com/id/184276818/ko/%EC%82%AC%EC%A7%84/%EB%A0%88%EB%93%9C-%EC%82%AC%EA%B3%BC%EB%82%98%EB%AC%B4.jpg?s=612x612&w=0&k=20&c=qe0XwDHYbQFgVaqM2unXZWVqI7kV2SSfXrCYaHsdmWM%3D';
             let audioUrl = urlParams.get('audio') || 'https://d3v6z7pi3x0q53.cloudfront.net/tts/apple.mp3';
+            
+            // 색상 처리 함수 - 색상 이름 또는 Hex 코드 처리
+            function processColor(colorParam, defaultColor) {
+                if (!colorParam) return '#' + defaultColor;
+                
+                // CSS 색상 이름인지 확인하기 위한 임시 요소
+                const tempElement = document.createElement('div');
+                tempElement.style.color = colorParam;
+                document.body.appendChild(tempElement);
+                
+                // 색상 이름이 유효하면 그대로 사용
+                const computedColor = window.getComputedStyle(tempElement).color;
+                document.body.removeChild(tempElement);
+                
+                if (computedColor !== 'rgb(0, 0, 0)' || colorParam.toLowerCase() === 'black') {
+                    return colorParam;
+                }
+                
+                // Hex 코드인 경우 # 추가
+                return '#' + colorParam;
+            }
+            
             const primaryColorValue = urlParams.get('primaryColor') || '5D5FEF';
-            const primaryColor = '#' + primaryColorValue;
+            const primaryColor = processColor(primaryColorValue, '5D5FEF');
+            
             const wordTextColorValue = urlParams.get('wordTextColor') || 'F3F4F6';
-            const wordTextColor = '#' + wordTextColorValue;
+            const wordTextColor = processColor(wordTextColorValue, 'F3F4F6');
+            
             const secondaryColorValue = urlParams.get('secondaryColor') || '10B981';
-            const secondaryColor = '#' + secondaryColorValue;
+            const secondaryColor = processColor(secondaryColorValue, '10B981');
             
             // 카드 크기 설정 (기본값: 320px)
             const defaultWidth = 320;
