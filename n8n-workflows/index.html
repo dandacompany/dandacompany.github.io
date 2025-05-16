@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <title>Dante Labs - n8n Workflow Demos</title>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs@2.0.0/webcomponents-loader.js"></script>
+    <script src="https://www.unpkg.com/lit@2.0.0-rc.2/polyfill-support.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@n8n_io/n8n-demo-component/n8n-demo.bundled.js"></script>
+    <script src="workflows-list.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e6f7f7;
+            background: linear-gradient(135deg, #181c1f 0%, #23272a 100%);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #181c1f 0%, #23272a 100%);
+            color: #e6f7f7;
+            padding: 32px 0 20px 0;
+            overflow-y: auto;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.25);
+            border-right: 1.5px solid #222b2e;
+        }
+        
+        .logo {
+            padding: 0 20px 32px;
+            text-align: center;
+            border-bottom: 1.5px solid #232c2f;
+            margin-bottom: 24px;
+        }
+        
+        .logo img {
+            filter: drop-shadow(0 2px 16px #3fe0b6aa);
+            border-radius: 18px;
+        }
+        
+        .logo h2 {
+            margin: 0;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-item {
+            padding: 15px 24px;
+            border-left: 4px solid transparent;
+            border-radius: 0 24px 24px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #e6f7f7;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(63,224,182,0.08);
+            border-left-color: #3fe0b6;
+            color: #3fe0b6;
+        }
+        
+        .nav-item.active {
+            background: rgba(63,224,182,0.15);
+            border-left-color: #3fe0b6;
+            color: #3fe0b6;
+            font-weight: 700;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 32px 32px 20px 32px;
+            background: linear-gradient(135deg, #23272a 0%, #181c1f 100%);
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .header h1 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 2rem;
+            font-family: 'Orbitron', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            color: #3fe0b6;
+            margin-top: 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        #n8n-demo-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #181c1f;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(63,224,182,0.08);
+            padding: 24px;
+        }
+        
+        n8n-demo {
+            --n8n-frame-background-color: #23272a;
+            --n8n-json-background-color: #3fe0b6;
+            --n8n-copy-button-background-color: #232c2f;
+            --n8n-workflow-min-height: 700px;
+            --n8n-iframe-border-radius: 12px;
+            --n8n-primary-color: #3fe0b6;
+            --n8n-secondary-color: #232c2f;
+            --n8n-font-color: #e6f7f7;
+        }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid #232c2f;
+            color: #3fe0b6;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .footer a {
+            color: #3fe0b6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+            color: #fff;
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            flex-direction: column;
+        }
+        
+        .loading-spinner {
+            border: 5px solid #232c2f;
+            border-top: 5px solid #3fe0b6;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .folder-group {
+            margin-bottom: 10px;
+        }
+        
+        .folder-title {
+            padding: 10px 24px 6px 24px;
+            background: none;
+            color: #3fe0b6;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                padding: 10px 0;
+            }
+            
+            .main-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body> 
+    <div class="sidebar">
+        <div class="logo">
+            <img src="dantelabs_logo.jpg" alt="Dante Labs 로고" style="width: 100%; max-width: 240px; display: block; margin: 0 auto 10px;" />
+        </div>
+        <ul class="nav-menu" id="workflow-menu">
+            <!-- 워크플로우 메뉴 항목이 동적으로 추가됩니다 -->
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <div class="header">
+            <h1 id="workflow-title">n8n 워크플로우 데모</h1>
+            <p id="workflow-description">선택된 워크플로우가 여기에 표시됩니다</p>
+        </div>
+
+        <div id="n8n-demo-container">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>워크플로우를 로드하는 중...</p>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2025 Dante Labs. 모든 권리 보유.</p>
+            <a href="https://www.youtube.com/@단테랩스" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:8px;">
+                <svg width="28" height="28" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;">
+                  <rect width="48" height="48" rx="12" fill="#181c1f"/>
+                  <path d="M39.2 17.2c-.3-1.2-1.2-2.1-2.4-2.4C34.2 14 24 14 24 14s-10.2 0-12.8.8c-1.2.3-2.1 1.2-2.4 2.4C8 19.8 8 24 8 24s0 4.2.8 6.8c.3 1.2 1.2 2.1 2.4 2.4C13.8 34 24 34 24 34s10.2 0 12.8-.8c1.2-.3 2.1-1.2 2.4-2.4.8-2.6.8-6.8.8-6.8s0-4.2-.8-6.8zM20.5 28.5v-9l8 4.5-8 4.5z" fill="#FF0000"/>
+                </svg>
+                <span style="margin-left:6px; color:#e6f7f7; font-weight:600; vertical-align:middle; font-size:1.1em;">단테 랩스 YouTube 채널</span>
+            </a>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                // 메뉴 생성
+                createMenu();
+                
+                // 기본적으로 첫 번째 워크플로우 로드
+                if (WORKFLOWS && WORKFLOWS.length > 0) {
+                    loadWorkflow(WORKFLOWS[0]);
+                } else {
+                    showError('사용 가능한 워크플로우가 없습니다.');
+                }
+            } catch (error) {
+                console.error('초기화 중 오류 발생:', error);
+                showError('워크플로우 목록을 로드하는 중 오류가 발생했습니다: ' + error.message);
+            }
+        });
+
+        // 워크플로우 목록을 폴더별로 정리하여 메뉴 생성
+        function createMenu() {
+            const workflowMenu = document.getElementById('workflow-menu');
+            workflowMenu.innerHTML = '';
+            
+            // 폴더별로 워크플로우 그룹화
+            const folderGroups = {};
+            
+            WORKFLOWS.forEach(workflow => {
+                const folderName = workflow.folder || 'other';
+                if (!folderGroups[folderName]) {
+                    folderGroups[folderName] = [];
+                }
+                folderGroups[folderName].push(workflow);
+            });
+            
+            // 폴더 순서 정의 (원하는 순서대로 배열에 추가)
+            const folderOrder = ['openai-analytics', 'mcp_server', 'english'];
+            
+            // 각 폴더별 메뉴 그룹 생성 (정의된 순서대로)
+            folderOrder.forEach(folderName => {
+                if (folderGroups[folderName]) {
+                    const folderGroup = document.createElement('div');
+                    folderGroup.className = 'folder-group';
+                    
+                    // 폴더 제목 추가
+                    const folderTitle = document.createElement('div');
+                    folderTitle.className = 'folder-title';
+                    
+                    // 폴더명을 보기 좋게 변환
+                    let displayName = folderName;
+                    switch(folderName) {
+                        case 'openai-analytics':
+                            displayName = 'OpenAI Analytics';
+                            break;
+                        case 'mcp_server':
+                            displayName = 'MCP 서버';
+                            break;
+                        case 'english':
+                            displayName = '영어 학습';
+                            break;
+                        default:
+                            displayName = folderName.replace(/-/g, ' ');
+                    }
+                    
+                    folderTitle.textContent = displayName;
+                    folderGroup.appendChild(folderTitle);
+                    
+                    // 폴더 내 워크플로우 목록 추가
+                    const workflows = folderGroups[folderName];
+                    workflows.forEach(workflow => {
+                        const menuItem = document.createElement('li');
+                        menuItem.className = 'nav-item';
+                        menuItem.dataset.id = workflow.id;
+                        menuItem.textContent = workflow.title;
+                        
+                        menuItem.addEventListener('click', () => {
+                            loadWorkflow(workflow);
+                            
+                            // 활성 메뉴 아이템 업데이트
+                            document.querySelectorAll('.nav-item').forEach(item => {
+                                item.classList.remove('active');
+                            });
+                            menuItem.classList.add('active');
+                        });
+                        
+                        folderGroup.appendChild(menuItem);
+                    });
+                    
+                    workflowMenu.appendChild(folderGroup);
+                }
+            });
+            
+            // 정의되지 않은 폴더가 있다면 마지막에 추가
+            Object.keys(folderGroups).forEach(folderName => {
+                if (!folderOrder.includes(folderName)) {
+                    const folderGroup = document.createElement('div');
+                    folderGroup.className = 'folder-group';
+                    
+                    const folderTitle = document.createElement('div');
+                    folderTitle.className = 'folder-title';
+                    folderTitle.textContent = folderName.replace(/-/g, ' ');
+                    folderGroup.appendChild(folderTitle);
+                    
+                    const workflows = folderGroups[folderName];
+                    workflows.forEach(workflow => {
+                        const menuItem = document.createElement('li');
+                        menuItem.className = 'nav-item';
+                        menuItem.dataset.id = workflow.id;
+                        menuItem.textContent = workflow.title;
+                        
+                        menuItem.addEventListener('click', () => {
+                            loadWorkflow(workflow);
+                            
+                            document.querySelectorAll('.nav-item').forEach(item => {
+                                item.classList.remove('active');
+                            });
+                            menuItem.classList.add('active');
+                        });
+                        
+                        folderGroup.appendChild(menuItem);
+                    });
+                    
+                    workflowMenu.appendChild(folderGroup);
+                }
+            });
+            
+            // 첫 번째 항목을 활성화
+            if (workflowMenu.querySelector('.nav-item')) {
+                workflowMenu.querySelector('.nav-item').classList.add('active');
+            }
+        }
+
+        async function loadWorkflow(workflow) {
+            try {
+                // 로딩 표시
+                document.getElementById('n8n-demo-container').innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>워크플로우를 로드하는 중...</p>
+                    </div>
+                `;
+                
+                // 타이틀과 설명 업데이트
+                document.getElementById('workflow-title').textContent = workflow.title;
+                document.getElementById('workflow-description').textContent = workflow.description;
+                
+                // 워크플로우 JSON 파일 경로
+                const jsonPath = `workflows/${workflow.folder}/${workflow.filename}`;
+                const response = await fetch(jsonPath);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP 오류: ${response.status}`);
+                }
+                
+                const workflowData = await response.json();
+                
+                // n8n-demo 컴포넌트 생성
+                document.getElementById('n8n-demo-container').innerHTML = '';
+                const container = document.getElementById('n8n-demo-container');
+                
+                const demoElement = document.createElement('n8n-demo');
+                
+                // 속성 설정
+                demoElement.setAttribute('workflow', JSON.stringify(workflowData));
+                demoElement.setAttribute('frame', 'false');
+                demoElement.setAttribute('clicktointeract', 'true');
+                demoElement.setAttribute('theme', 'dark');
+                
+                // 프로퍼티 설정
+                demoElement.showPreview = true;
+                demoElement.showCode = true;
+                // demoElement.fullscreen = true;
+                demoElement.insideIframe = true;
+                
+                container.appendChild(demoElement);
+                console.log(`워크플로우 "${workflow.title}"가 성공적으로 로드되었습니다.`);
+            } catch (error) {
+                console.error('워크플로우 데이터를 가져오는 중 오류 발생:', error);
+                showError(`워크플로우 데이터를 가져오는 중 오류가 발생했습니다: ${error.message}<br>파일 경로를 확인해주세요: ${jsonPath}`);
+            }
+        }
+        
+        function showError(message) {
+            document.getElementById('n8n-demo-container').innerHTML = `
+                <div style="padding: 20px; background-color: #ffdddd; border-radius: 5px; margin-top: 20px;">
+                    <h3>오류 발생</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html> 
