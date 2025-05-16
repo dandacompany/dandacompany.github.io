@@ -411,7 +411,6 @@
                 demoElement.insideIframe = true;
                 
                 container.appendChild(demoElement);
-                console.log(`워크플로우 "${workflow.title}"가 성공적으로 로드되었습니다.`);
             } catch (error) {
                 console.error('워크플로우 데이터를 가져오는 중 오류 발생:', error);
                 showError(`워크플로우 데이터를 가져오는 중 오류가 발생했습니다: ${error.message}<br>파일 경로를 확인해주세요: ${jsonPath}`);
