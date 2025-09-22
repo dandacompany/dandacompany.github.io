@@ -26,44 +26,6 @@
 - **오디오 단어 카드**: 음성 지원 어휘 학습 위젯
 - **음악 플레이어**: 커스텀 미디어 플레이어
 
-## 💻 로컬 개발
-
-```bash
-# 저장소 클론
-git clone https://github.com/dandacompany/dandacompany.github.io.git
-cd dandacompany.github.io
-
-# 로컬 서버 실행 (Python)
-python3 -m http.server 8000
-
-# 또는 Node.js 사용
-npx http-server
-
-# 브라우저에서 접속
-# http://localhost:8000
-```
-
-## 📝 콘텐츠 추가 방법
-
-### n8n 워크플로우 추가
-
-1. JSON 파일을 적절한 카테고리 폴더에 저장 (`n8n-workflows/workflows/[category]/`)
-2. `n8n-workflows/workflows-list.js`에 메타데이터 추가:
-
-```javascript
-{
-    id: 'workflow_id',
-    title: '워크플로우 제목',
-    description: '설명',
-    filename: 'workflow.json',
-    folder: 'category'
-}
-```
-
-### 위젯 추가
-
-1. `widgets/` 폴더에 새 HTML 파일 생성
-2. 자체 포함된 HTML/CSS/JavaScript로 구현
 
 ## 🔗 관련 프로젝트
 
