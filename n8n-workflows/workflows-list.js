@@ -108,6 +108,29 @@ const WORKFLOWS = [
         description: '영어 말하기 연습용 콘텐츠 생성 워크플로우',
         filename: 'english-speaking-content-generator.json',
         folder: 'english'
+    },
+
+    // RAG 워크플로우
+    {
+        id: 'agentic_rag_manager',
+        title: 'Agentic RAG Manager',
+        description: '에이전틱 RAG 관리 시스템 워크플로우',
+        filename: 'Agentic RAG Manager.json',
+        folder: 'rag'
+    },
+    {
+        id: 'knowledge_based_chatbot',
+        title: 'Knowledge-Based Chatbot',
+        description: '지식 기반 챗봇 워크플로우',
+        filename: 'Knowledge-Based Chatbot.json',
+        folder: 'rag'
+    },
+    {
+        id: 'upload_to_gcs',
+        title: 'Upload to GCS',
+        description: 'Google Cloud Storage 업로드 워크플로우',
+        filename: 'Upload to GCS.json',
+        folder: 'rag'
     }
 ];
 

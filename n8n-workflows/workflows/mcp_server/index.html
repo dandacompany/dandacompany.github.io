@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../favicon.png">
+    <title>MCP 서버 - Dante Labs n8n Workflows</title>
+    <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs@2.0.0/webcomponents-loader.js"></script>
+    <script src="https://www.unpkg.com/lit@2.0.0-rc.2/polyfill-support.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@n8n_io/n8n-demo-component/n8n-demo.bundled.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e6f7f7;
+            background: linear-gradient(135deg, #181c1f 0%, #23272a 100%);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #181c1f 0%, #23272a 100%);
+            color: #e6f7f7;
+            padding: 32px 0 20px 0;
+            overflow-y: auto;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.25);
+            border-right: 1.5px solid #222b2e;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 24px;
+            border-bottom: 1.5px solid #232c2f;
+            margin-bottom: 20px;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #3fe0b6;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            padding: 8px 12px;
+            background: rgba(63,224,182,0.1);
+            border-radius: 8px;
+        }
+        
+        .back-link:hover {
+            background: rgba(63,224,182,0.2);
+            transform: translateX(-5px);
+        }
+        
+        .category-title {
+            color: white;
+            font-size: 1.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .category-icon {
+            font-size: 1.8rem;
+        }
+        
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-item {
+            padding: 15px 24px;
+            border-left: 4px solid transparent;
+            border-radius: 0 24px 24px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #e6f7f7;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(63,224,182,0.08);
+            border-left-color: #3fe0b6;
+            color: #3fe0b6;
+        }
+        
+        .nav-item.active {
+            background: rgba(63,224,182,0.15);
+            border-left-color: #3fe0b6;
+            color: #3fe0b6;
+            font-weight: 700;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 32px 32px 20px 32px;
+            background: linear-gradient(135deg, #23272a 0%, #181c1f 100%);
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .header h1 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 2rem;
+            font-family: 'Orbitron', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            color: #3fe0b6;
+            margin-top: 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        #n8n-demo-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #181c1f;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(63,224,182,0.08);
+            padding: 24px;
+        }
+        
+        n8n-demo {
+            --n8n-frame-background-color: #23272a;
+            --n8n-json-background-color: #3fe0b6;
+            --n8n-copy-button-background-color: #232c2f;
+            --n8n-workflow-min-height: 700px;
+            --n8n-iframe-border-radius: 12px;
+            --n8n-primary-color: #3fe0b6;
+            --n8n-secondary-color: #232c2f;
+            --n8n-font-color: #e6f7f7;
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            flex-direction: column;
+        }
+        
+        .loading-spinner {
+            border: 5px solid #232c2f;
+            border-top: 5px solid #3fe0b6;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                padding: 10px 0;
+            }
+            
+            .main-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="../../" class="back-link">
+                <span>←</span>
+                <span>카테고리로 돌아가기</span>
+            </a>
+            <h2 class="category-title">
+                <span class="category-icon">🔌</span>
+                <span>MCP 서버</span>
+            </h2>
+        </div>
+        <ul class="nav-menu" id="workflow-menu">
+            <!-- 워크플로우 메뉴 항목이 동적으로 추가됩니다 -->
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <div class="header">
+            <h1 id="workflow-title">워크플로우를 선택하세요</h1>
+            <p id="workflow-description">왼쪽 메뉴에서 워크플로우를 선택하면 여기에 표시됩니다</p>
+        </div>
+
+        <div id="n8n-demo-container">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>워크플로우를 선택해주세요...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 워크플로우 목록 정의
+        const WORKFLOWS = [
+            {
+                id: 'get_website_simple_markdown',
+                title: '웹사이트 마크다운 변환',
+                description: '웹사이트 내용을 간단한 마크다운으로 가져오는 워크플로우',
+                filename: 'Get_Website_Simple_Markdown.json'
+            },
+            {
+                id: 'kakaotalk_send_me',
+                title: '카카오톡 메시지 보내기',
+                description: '카카오톡으로 메시지를 보내는 워크플로우',
+                filename: 'Kakaotalk_Send_me.json'
+            },
+            {
+                id: 'dantelabs_coupang_review_analyze_server',
+                title: '쿠팡 리뷰 분석 서버',
+                description: '쿠팡 상품 리뷰 분석 서버 워크플로우',
+                filename: 'DanteLabsCoupangReviewAnalyzeServer.json'
+            },
+            {
+                id: 'dante_labs_ai_news_maker',
+                title: 'AI 뉴스 메이커',
+                description: 'AI를 활용한 뉴스 생성 워크플로우',
+                filename: 'Dante_Labs_AI_News_Maker.json'
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createMenu();
+            // 첫 번째 워크플로우 자동 로드
+            if (WORKFLOWS.length > 0) {
+                loadWorkflow(WORKFLOWS[0]);
+            }
+        });
+
+        function createMenu() {
+            const menu = document.getElementById('workflow-menu');
+            menu.innerHTML = '';
+            
+            WORKFLOWS.forEach((workflow, index) => {
+                const menuItem = document.createElement('li');
+                menuItem.className = 'nav-item';
+                if (index === 0) menuItem.classList.add('active');
+                menuItem.textContent = workflow.title;
+                
+                menuItem.addEventListener('click', () => {
+                    loadWorkflow(workflow);
+                    
+                    // 활성 메뉴 아이템 업데이트
+                    document.querySelectorAll('.nav-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    menuItem.classList.add('active');
+                });
+                
+                menu.appendChild(menuItem);
+            });
+        }
+
+        async function loadWorkflow(workflow) {
+            try {
+                // 로딩 표시
+                document.getElementById('n8n-demo-container').innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>워크플로우를 로드하는 중...</p>
+                    </div>
+                `;
+                
+                // 타이틀과 설명 업데이트
+                document.getElementById('workflow-title').textContent = workflow.title;
+                document.getElementById('workflow-description').textContent = workflow.description;
+                
+                // 워크플로우 JSON 파일 로드
+                const response = await fetch(workflow.filename);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP 오류: ${response.status}`);
+                }
+                
+                const workflowData = await response.json();
+                
+                // n8n-demo 컴포넌트 생성
+                document.getElementById('n8n-demo-container').innerHTML = '';
+                const container = document.getElementById('n8n-demo-container');
+                
+                const demoElement = document.createElement('n8n-demo');
+                
+                // 속성 설정
+                demoElement.setAttribute('workflow', JSON.stringify(workflowData));
+                demoElement.setAttribute('frame', 'false');
+                demoElement.setAttribute('clicktointeract', 'true');
+                demoElement.setAttribute('theme', 'dark');
+                
+                // 프로퍼티 설정
+                demoElement.showPreview = true;
+                demoElement.showCode = true;
+                demoElement.insideIframe = true;
+                
+                container.appendChild(demoElement);
+            } catch (error) {
+                console.error('워크플로우 로드 중 오류:', error);
+                document.getElementById('n8n-demo-container').innerHTML = `
+                    <div style="padding: 20px; background-color: #ffdddd; border-radius: 5px; color: #333;">
+                        <h3>오류 발생</h3>
+                        <p>워크플로우를 로드하는 중 오류가 발생했습니다: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
