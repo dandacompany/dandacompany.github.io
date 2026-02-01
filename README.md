@@ -7,7 +7,7 @@
 
 ## 🔗 주요 링크
 
-🏠 **홈페이지**: [https://dante-datalab.com](https://dante-datalab.com)  
+🏠 **홈페이지**: [https://dante-labs.com](https://dante-labs.com)  
 📚 **자료실**: [https://dandacompany.github.io](https://dandacompany.github.io)
 
 ## 🚀 주요 기능
